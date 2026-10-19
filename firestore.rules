@@ -1,0 +1,121 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Global safety net: default deny
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    function isValidId(id) {
+      return id is string && id.size() >= 1 && id.size() <= 128 && id.matches('^[a-zA-Z0-9_\\-]+$');
+    }
+
+    function incoming() {
+      return request.resource.data;
+    }
+
+    function existing() {
+      return resource.data;
+    }
+
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function isValidFocusSession(data) {
+      return data.userId is string && data.userId == request.auth.uid && data.userId.size() <= 128 &&
+             data.mode is string && data.mode.size() <= 32 &&
+             data.mode in ['FOCUS', 'STOPWATCH', 'POMODORO', 'ULTRA_FOCUS'] &&
+             data.durationMinutes is int && data.durationMinutes >= 1 && data.durationMinutes <= 720 &&
+             data.subject is string && data.subject.size() >= 1 && data.subject.size() <= 100 &&
+             data.completed is bool &&
+             data.createdAt is timestamp && data.createdAt <= request.time &&
+             data.updatedAt is timestamp && data.updatedAt <= request.time;
+    }
+
+    function isValidAppRuleConfig(data) {
+      return data.userId is string && data.userId == request.auth.uid && data.userId.size() <= 128 &&
+             data.packageName is string && data.packageName.size() >= 1 && data.packageName.size() <= 128 &&
+             data.appName is string && data.appName.size() >= 1 && data.appName.size() <= 100 &&
+             data.category is string && data.category.size() <= 32 &&
+             data.category in ['browser', 'game', 'social', 'study'] &&
+             data.isAllowed is bool &&
+             data.dailyLimitMinutes is int && data.dailyLimitMinutes >= 0 && data.dailyLimitMinutes <= 480 &&
+             data.createdAt is timestamp && data.createdAt <= request.time &&
+             data.updatedAt is timestamp && data.updatedAt <= request.time;
+    }
+
+    function isValidStudyAssessmentRecord(data) {
+      return data.userId is string && data.userId == request.auth.uid && data.userId.size() <= 128 &&
+             data.scorePercent is int && data.scorePercent >= 0 && data.scorePercent <= 100 &&
+             data.correctCount is int && data.correctCount >= 0 && data.correctCount <= 50 &&
+             data.totalQuestions is int && data.totalQuestions >= 1 && data.totalQuestions <= 50 &&
+             data.passed is bool &&
+             data.createdAt is timestamp && data.createdAt <= request.time &&
+             data.updatedAt is timestamp && data.updatedAt <= request.time;
+    }
+
+    match /focus_sessions/{sessionId} {
+      allow get: if isSignedIn() && isValidId(sessionId) && existing().userId == request.auth.uid;
+      allow list: if isSignedIn() && existing().userId == request.auth.uid;
+
+      allow create: if isSignedIn() &&
+                       isValidId(sessionId) &&
+                       incoming().keys().hasAll(['userId', 'mode', 'durationMinutes', 'subject', 'completed', 'createdAt', 'updatedAt']) &&
+                       incoming().keys().hasOnly(['userId', 'mode', 'durationMinutes', 'subject', 'completed', 'createdAt', 'updatedAt']) &&
+                       isValidFocusSession(incoming());
+
+      allow update: if isSignedIn() &&
+                       isValidId(sessionId) &&
+                       isValidFocusSession(incoming()) &&
+                       existing().userId == request.auth.uid &&
+                       incoming().userId == existing().userId &&
+                       incoming().createdAt == existing().createdAt &&
+                       incoming().diff(existing()).affectedKeys().hasOnly(['mode', 'durationMinutes', 'subject', 'completed', 'updatedAt']);
+
+      allow delete: if isSignedIn() && isValidId(sessionId) && existing().userId == request.auth.uid;
+    }
+
+    match /app_configs/{configId} {
+      allow get: if isSignedIn() && isValidId(configId) && existing().userId == request.auth.uid;
+      allow list: if isSignedIn() && existing().userId == request.auth.uid;
+
+      allow create: if isSignedIn() &&
+                       isValidId(configId) &&
+                       incoming().keys().hasAll(['userId', 'packageName', 'appName', 'category', 'isAllowed', 'dailyLimitMinutes', 'createdAt', 'updatedAt']) &&
+                       incoming().keys().hasOnly(['userId', 'packageName', 'appName', 'category', 'isAllowed', 'dailyLimitMinutes', 'createdAt', 'updatedAt']) &&
+                       isValidAppRuleConfig(incoming());
+
+      allow update: if isSignedIn() &&
+                       isValidId(configId) &&
+                       isValidAppRuleConfig(incoming()) &&
+                       existing().userId == request.auth.uid &&
+                       incoming().userId == existing().userId &&
+                       incoming().createdAt == existing().createdAt &&
+                       incoming().diff(existing()).affectedKeys().hasOnly(['appName', 'category', 'isAllowed', 'dailyLimitMinutes', 'updatedAt']);
+
+      allow delete: if isSignedIn() && isValidId(configId) && existing().userId == request.auth.uid;
+    }
+
+    match /study_assessments/{assessmentId} {
+      allow get: if isSignedIn() && isValidId(assessmentId) && existing().userId == request.auth.uid;
+      allow list: if isSignedIn() && existing().userId == request.auth.uid;
+
+      allow create: if isSignedIn() &&
+                       isValidId(assessmentId) &&
+                       incoming().keys().hasAll(['userId', 'scorePercent', 'correctCount', 'totalQuestions', 'passed', 'createdAt', 'updatedAt']) &&
+                       incoming().keys().hasOnly(['userId', 'scorePercent', 'correctCount', 'totalQuestions', 'passed', 'createdAt', 'updatedAt']) &&
+                       isValidStudyAssessmentRecord(incoming());
+
+      allow update: if isSignedIn() &&
+                       isValidId(assessmentId) &&
+                       isValidStudyAssessmentRecord(incoming()) &&
+                       existing().userId == request.auth.uid &&
+                       incoming().userId == existing().userId &&
+                       incoming().createdAt == existing().createdAt &&
+                       incoming().diff(existing()).affectedKeys().hasOnly(['scorePercent', 'correctCount', 'totalQuestions', 'passed', 'updatedAt']);
+
+      allow delete: if isSignedIn() && isValidId(assessmentId) && existing().userId == request.auth.uid;
+    }
+  }
+}

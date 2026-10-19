@@ -1,0 +1,138 @@
+{
+  "entities": {
+    "FocusSession": {
+      "title": "FocusSession",
+      "description": "Represents a logged study timer, stopwatch, Pomodoro, or ultra-focus session.",
+      "type": "object",
+      "properties": {
+        "userId": {
+          "type": "string",
+          "description": "Authenticated user UID who owns the focus session."
+        },
+        "mode": {
+          "type": "string",
+          "enum": ["FOCUS", "STOPWATCH", "POMODORO", "ULTRA_FOCUS"],
+          "description": "Timer mode used for the study session."
+        },
+        "durationMinutes": {
+          "type": "integer",
+          "description": "Completed focus duration in minutes."
+        },
+        "subject": {
+          "type": "string",
+          "description": "Study subject or topic covered."
+        },
+        "completed": {
+          "type": "boolean",
+          "description": "Whether the focus session finished without interruption."
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Server timestamp when the session was recorded (FieldValue.serverTimestamp())."
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Server timestamp when the session was last updated (FieldValue.serverTimestamp())."
+        }
+      },
+      "required": ["userId", "mode", "durationMinutes", "subject", "completed", "createdAt", "updatedAt"]
+    },
+    "AppRuleConfig": {
+      "title": "AppRuleConfig",
+      "description": "Represents a user-configured application selection rule and daily time quota.",
+      "type": "object",
+      "properties": {
+        "userId": {
+          "type": "string",
+          "description": "Authenticated user UID who owns this app rule."
+        },
+        "packageName": {
+          "type": "string",
+          "description": "Android package identifier."
+        },
+        "appName": {
+          "type": "string",
+          "description": "Display name of the application."
+        },
+        "category": {
+          "type": "string",
+          "enum": ["browser", "game", "social", "study"],
+          "description": "Classification category of the application."
+        },
+        "isAllowed": {
+          "type": "boolean",
+          "description": "Whether the app is permitted in the Select Application configuration."
+        },
+        "dailyLimitMinutes": {
+          "type": "integer",
+          "description": "Permitted daily usage quota in minutes."
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Server timestamp when the rule was created (FieldValue.serverTimestamp())."
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Server timestamp when the rule was last updated (FieldValue.serverTimestamp())."
+        }
+      },
+      "required": ["userId", "packageName", "appName", "category", "isAllowed", "dailyLimitMinutes", "createdAt", "updatedAt"]
+    },
+    "StudyAssessmentRecord": {
+      "title": "StudyAssessmentRecord",
+      "description": "Represents a nightly 5-minute mandatory study assessment result.",
+      "type": "object",
+      "properties": {
+        "userId": {
+          "type": "string",
+          "description": "Authenticated user UID who completed the assessment."
+        },
+        "scorePercent": {
+          "type": "integer",
+          "description": "Percentage score achieved (0-100)."
+        },
+        "correctCount": {
+          "type": "integer",
+          "description": "Number of questions answered correctly."
+        },
+        "totalQuestions": {
+          "type": "integer",
+          "description": "Total questions in the assessment."
+        },
+        "passed": {
+          "type": "boolean",
+          "description": "Whether the student scored >= 60% to pass."
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Server timestamp when the assessment was recorded (FieldValue.serverTimestamp())."
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Server timestamp when the assessment was updated (FieldValue.serverTimestamp())."
+        }
+      },
+      "required": ["userId", "scorePercent", "correctCount", "totalQuestions", "passed", "createdAt", "updatedAt"]
+    }
+  },
+  "firestore": {
+    "/focus_sessions/{sessionId}": {
+      "schema": { "$ref": "#/entities/FocusSession" },
+      "description": "Stores user focus timer, stopwatch, Pomodoro, and ultra-focus sessions."
+    },
+    "/app_configs/{configId}": {
+      "schema": { "$ref": "#/entities/AppRuleConfig" },
+      "description": "Stores per-user selected application permissions and daily limits."
+    },
+    "/study_assessments/{assessmentId}": {
+      "schema": { "$ref": "#/entities/StudyAssessmentRecord" },
+      "description": "Stores nightly 5-minute study assessment scores and pass/fail status."
+    }
+  }
+}

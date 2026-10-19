@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="108"
+    android:viewportHeight="108">
+    <!-- Shield Outline & Body -->
+    <path
+        android:fillColor="#1E293B"
+        android:strokeColor="#38BDF8"
+        android:strokeWidth="2.5"
+        android:pathData="M54,23 L79,33 C79,59 54,77 54,85 C54,77 29,59 29,33 Z" />
+
+    <!-- Shield Inner Accent -->
+    <path
+        android:fillColor="#0284C7"
+        android:fillAlpha="0.25"
+        android:pathData="M54,28 L74,36 C74,57 54,72 54,79 C54,72 34,57 34,36 Z" />
+
+    <!-- Padlock Shackle -->
+    <path
+        android:fillColor="#00000000"
+        android:strokeColor="#F59E0B"
+        android:strokeWidth="3.2"
+        android:strokeLineCap="round"
+        android:pathData="M47,49 V44 C47,40.1 50.1,37 54,37 C57.9,37 61,40.1 61,44 V49" />
+
+    <!-- Padlock Body -->
+    <path
+        android:fillColor="#F59E0B"
+        android:pathData="M43,49 H65 C66.1,49 67,49.9 67,51 V63 C67,64.1 66.1,65 65,65 H43 C41.9,65 41,64.1 41,63 V51 C41,49.9 41.9,49 43,49 Z" />
+
+    <!-- Keyhole / Core dot -->
+    <path
+        android:fillColor="#0B111E"
+        android:pathData="M54,54 C52.9,54 52,54.9 52,56 C52,56.7 52.4,57.3 53,57.7 V61 H55 V57.7 C55.6,57.3 56,56.7 56,56 C56,54.9 55.1,54 54,54 Z" />
+
+    <!-- 21-Day Star Emblem at Top -->
+    <path
+        android:fillColor="#10B981"
+        android:pathData="M54,25 L55.5,29.5 H60.2 L56.4,32.2 L57.9,36.7 L54,34 L50.1,36.7 L51.6,32.2 L47.8,29.5 H52.5 Z" />
+</vector>

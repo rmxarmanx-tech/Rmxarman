@@ -1,0 +1,8 @@
+<resources>
+    <string name="app_name">UGT StudyGuard</string>
+    <string name="app_tagline">Strict AI Discipline &amp; Study Controller</string>
+    <string name="challenge_active_title">21-Day Ultra Strict Mode Active</string>
+    <string name="ugt_tuition_title">UGT Tuition Dedicated Portal</string>
+    <string name="lockout_warning_title">Device Restricted (30-Minute Penalty)</string>
+    <string name="night_assessment_title">Mandatory Nightly Study Assessment</string>
+</resources>

@@ -1,0 +1,6 @@
+{
+  "name": "UGT StudyGuard",
+  "description": "Strict 21-day AI-powered study controller, distraction blocker, APK detector, and UGT tuition proctor.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
